@@ -2,18 +2,12 @@
 package com.example.administrator.candlestickcharttest225;
 
 import android.graphics.Color;
+import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.WindowManager;
-import android.widget.SeekBar;
-import android.widget.SeekBar.OnSeekBarChangeListener;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import com.github.mikephil.charting.charts.CandleStickChart;
-import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.XAxis.XAxisPosition;
 import com.github.mikephil.charting.components.YAxis;
@@ -21,7 +15,6 @@ import com.github.mikephil.charting.components.YAxis.AxisDependency;
 import com.github.mikephil.charting.data.CandleData;
 import com.github.mikephil.charting.data.CandleDataSet;
 import com.github.mikephil.charting.data.CandleEntry;
-import com.github.mikephil.charting.interfaces.datasets.ICandleDataSet;
 
 import java.util.ArrayList;
 
@@ -63,20 +56,26 @@ public class CandleStickChartActivity extends DemoBase {
         XAxis xAxis = mChart.getXAxis();
         xAxis.setPosition(XAxisPosition.BOTTOM);
         xAxis.setSpaceBetweenLabels(2);
-        xAxis.setDrawGridLines(false);
+        xAxis.setDrawGridLines(true);
 
         YAxis leftAxis = mChart.getAxisLeft();
-//        leftAxis.setEnabled(false);
-        leftAxis.setLabelCount(7, false);
-        leftAxis.setDrawGridLines(false);
-        leftAxis.setDrawAxisLine(false);
+        leftAxis.setEnabled(false);
+//        leftAxis.setLabelCount(7, false);
+//        leftAxis.setDrawGridLines(false);
+//        leftAxis.setDrawAxisLine(false);
 
         YAxis rightAxis = mChart.getAxisRight();
-        rightAxis.setEnabled(false);
-//        rightAxis.setStartAtZero(false);
+        rightAxis.setEnabled(true);
+        rightAxis.setLabelCount(5, true);// true 强制数据的数量
+        rightAxis.setDrawGridLines(true);// 是否绘制表格的网格背景
+        rightAxis.setDrawAxisLine(true);// 是否绘制y轴的线
+        rightAxis.setStartAtZero(true);//y轴的起点是否为0，右边无效？
 
         // 不显示图例
         mChart.getLegend().setEnabled(false);
+
+        //
+//        mChart.zoom();
     }
 
     private void initOld() {
@@ -140,8 +139,19 @@ public class CandleStickChartActivity extends DemoBase {
             xVals.add("haha" + i);
         }
 
+        if (xVals.size() > 5) {
+            Matrix matrix = new Matrix();
+            //x轴缩放1.5倍
+            matrix.postScale(2.5f, 1f);
+            //在图表动画显示之前进行缩放
+            mChart.getViewPortHandler().refresh(matrix, mChart, false);
+            //x轴执行动画
+            mChart.animateX(1500);
+            mChart.moveViewToX(0);
+        }
+
         CandleDataSet set1 = new CandleDataSet(yVals1, "Data Set");
-        set1.setHighlightEnabled(false);// 此处必须得写  避免冲突，否则会导致联动不显示
+        set1.setHighlightEnabled(false);//不显示高亮线(点击的定位线)
         set1.setAxisDependency(AxisDependency.LEFT);
 //        set1.setColor(Color.rgb(80, 80, 80));
         set1.setShadowColor(Color.parseColor("#ff0000")); // 蜡烛上下竖线的颜色
@@ -151,7 +161,7 @@ public class CandleStickChartActivity extends DemoBase {
         set1.setIncreasingColor(Color.parseColor("#550000ff")); // 上升的颜色 open <= close.
         set1.setIncreasingPaintStyle(Paint.Style.FILL); // 上升画实心的蜡烛
         set1.setNeutralColor(Color.BLUE); // open == close. 的颜色
-//        set1.setHighlightLineWidth(1f);  // 什么叫高亮线宽度 ？
+//        set1.setHighlightLineWidth(1f);  // 什么叫高亮线(点击的定位线)宽度
 
         CandleData data = new CandleData(xVals, set1);
 
