@@ -4,10 +4,13 @@ package com.example.administrator.candlestickcharttest225;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.WindowManager;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.github.mikephil.charting.charts.CandleStickChart;
 import com.github.mikephil.charting.components.Legend;
@@ -18,38 +21,42 @@ import com.github.mikephil.charting.components.YAxis.AxisDependency;
 import com.github.mikephil.charting.data.CandleData;
 import com.github.mikephil.charting.data.CandleDataSet;
 import com.github.mikephil.charting.data.CandleEntry;
+import com.github.mikephil.charting.interfaces.datasets.ICandleDataSet;
 
 import java.util.ArrayList;
 
-public class CandleStickChartActivity extends DemoBase implements OnSeekBarChangeListener {
+public class CandleStickChartActivity extends DemoBase {
 
     private CandleStickChart mChart;
-    private SeekBar mSeekBarX, mSeekBarY;
-    private TextView tvX, tvY;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_candlechart);
 
-        initView();
+        mChart = (CandleStickChart) findViewById(R.id.chart1);
 
+        initChart();
 
-        mSeekBarX.setOnSeekBarChangeListener(this);
-        mSeekBarY.setOnSeekBarChangeListener(this);
+        setData();
 
+    }
+
+    private void initChart() {
+
+        initOld();
 
         mChart.setBackgroundColor(Color.WHITE);
 
         mChart.setDescription("");
 
-        // if more than 60 entries are displayed in the chart, no values will be
-        // drawn
+        // 一张表如果超过60个数据，将会不会显示任何数据
         mChart.setMaxVisibleValueCount(60);
 
-        // scaling can now only be done on x- and y-axis separately
-        mChart.setPinchZoom(false);
+        // 缩放目前只支持X轴和Y轴，是否可以双指缩放
+        mChart.setPinchZoom(true);
 
         mChart.setDrawGridBackground(false);
 
@@ -63,95 +70,94 @@ public class CandleStickChartActivity extends DemoBase implements OnSeekBarChang
         leftAxis.setLabelCount(7, false);
         leftAxis.setDrawGridLines(false);
         leftAxis.setDrawAxisLine(false);
-        
+
         YAxis rightAxis = mChart.getAxisRight();
         rightAxis.setEnabled(false);
 //        rightAxis.setStartAtZero(false);
 
-        // setting data
-        mSeekBarX.setProgress(40);
-        mSeekBarY.setProgress(100);
-        
+        // 不显示图例
         mChart.getLegend().setEnabled(false);
-
-         Legend l = mChart.getLegend();
-        // l.setPosition(LegendPosition.BELOW_CHART_CENTER);
-        // l.setFormSize(8f);
-        // l.setFormToTextSpace(4f);
-        // l.setXEntrySpace(6f);
-
-        // mChart.setDrawLegend(false);
     }
 
-    private void initView() {
-        tvX = (TextView) findViewById(R.id.tvXMax);
-        tvY = (TextView) findViewById(R.id.tvYMax);
-        mSeekBarX = (SeekBar) findViewById(R.id.seekBar1);
-        mSeekBarY = (SeekBar) findViewById(R.id.seekBar2);
-        mChart = (CandleStickChart) findViewById(R.id.chart1);
+    private void initOld() {
+        // 没有数据的时候，显示“暂无数据”
+        mChart.setNoDataText("no data");
+        // 可拖曳
+        mChart.setDragEnabled(true);
+        // 不显示表格颜色
+//        mChart.setDrawGridBackground(false);
+//        mChart.setBackgroundColor(Color.parseColor("#ffffff"));
+//        mChart.setDrawMarkerViews(true);
+        mChart.setTouchEnabled(true); // 设置是否可以触摸，不可触摸没有辅助线，但是不可触摸就不可以缩放
+        // 可以缩放
+        mChart.setScaleEnabled(true);
+
+
+        // 向左偏移15dp，抵消y轴向右偏移的30dp
+//        mChart.setExtraLeftOffset(-10);
+        XAxis xAxis = mChart.getXAxis();
+        // true 第一个和最后一个不会绘制在表格边缘
+        xAxis.setAvoidFirstLastClipping(true);
+        // 设置x轴数据的位置
+        xAxis.setTextColor(Color.parseColor("#ff0000"));
+        xAxis.setTextSize(10);
+        xAxis.setGridColor(Color.parseColor("#d8d8d8"));
+        // 设置x轴数据偏移量
+//        xAxis.setYOffset(-12);
     }
 
+    private void setData() {
 
-    @Override
-    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-        
-        int prog = (mSeekBarX.getProgress() + 1);
-
-        tvX.setText("" + prog);
-        tvY.setText("" + (mSeekBarY.getProgress()));
-        
         mChart.resetTracking();
 
         ArrayList<CandleEntry> yVals1 = new ArrayList<CandleEntry>();
 
-        for (int i = 0; i < prog; i++) {
-            float mult = (mSeekBarY.getProgress() + 1);
-            float val = (float) (Math.random() * 40) + mult;
-            
+        for (int i = 0; i < 20; i++) {
+            float val = (float) (Math.random() * 40) + 10;
+
             float high = (float) (Math.random() * 9) + 8f;
             float low = (float) (Math.random() * 9) + 8f;
-            
+
             float open = (float) (Math.random() * 6) + 1f;
             float close = (float) (Math.random() * 6) + 1f;
 
             boolean even = i % 2 == 0;
 
+            /**
+             * @param x The value on the x-axis（值）30
+             * @param shadowH The (shadow) high value（开盘成交最高价格）（蜡烛上面竖线的最低高的值）35
+             * @param shadowL The (shadow) low value（开盘成交最低价格）（蜡烛下面竖线的最低点的值）20
+             * @param open（开盘价格）（蜡烛顶点的值）32
+             * @param close（收盘价格）（蜡烛底点的值）23
+             * @param icon Icon image
+             */
             yVals1.add(new CandleEntry(i, val + high, val - low, even ? val + open : val - open,
                     even ? val - close : val + close));
         }
 
         ArrayList<String> xVals = new ArrayList<String>();
-        for (int i = 0; i < prog; i++) {
-            xVals.add("" + (1990 + i));
+        for (int i = 0; i < 20; i++) {
+            xVals.add("haha" + i);
         }
 
         CandleDataSet set1 = new CandleDataSet(yVals1, "Data Set");
+        set1.setHighlightEnabled(false);// 此处必须得写  避免冲突，否则会导致联动不显示
         set1.setAxisDependency(AxisDependency.LEFT);
 //        set1.setColor(Color.rgb(80, 80, 80));
-        set1.setShadowColor(Color.DKGRAY);
-        set1.setShadowWidth(0.7f);
-        set1.setDecreasingColor(Color.RED);
-        set1.setDecreasingPaintStyle(Paint.Style.FILL);
-        set1.setIncreasingColor(Color.rgb(122, 242, 84));
-        set1.setIncreasingPaintStyle(Paint.Style.STROKE);
-        set1.setNeutralColor(Color.BLUE);
-        //set1.setHighlightLineWidth(1f);
+        set1.setShadowColor(Color.parseColor("#ff0000")); // 蜡烛上下竖线的颜色
+        set1.setShadowWidth(0.7f); // 蜡烛上下竖线的宽度
+        set1.setDecreasingColor(Color.parseColor("#5500ff00")); // 下降的颜色 open >= close.
+        set1.setDecreasingPaintStyle(Paint.Style.FILL); // 下降画实心的蜡烛
+        set1.setIncreasingColor(Color.parseColor("#550000ff")); // 上升的颜色 open <= close.
+        set1.setIncreasingPaintStyle(Paint.Style.FILL); // 上升画实心的蜡烛
+        set1.setNeutralColor(Color.BLUE); // open == close. 的颜色
+//        set1.setHighlightLineWidth(1f);  // 什么叫高亮线宽度 ？
 
         CandleData data = new CandleData(xVals, set1);
-        
+
         mChart.setData(data);
         mChart.invalidate();
     }
 
-    @Override
-    public void onStartTrackingTouch(SeekBar seekBar) {
-        // TODO Auto-generated method stub
 
-    }
-
-    @Override
-    public void onStopTrackingTouch(SeekBar seekBar) {
-        // TODO Auto-generated method stub
-
-    }
 }
