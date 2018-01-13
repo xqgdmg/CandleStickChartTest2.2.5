@@ -10,6 +10,7 @@ import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
 
 import com.github.mikephil.charting.charts.CandleStickChart;
+import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.XAxis.XAxisPosition;
 import com.github.mikephil.charting.components.YAxis;
@@ -29,20 +30,16 @@ public class CandleStickChartActivity extends DemoBase implements OnSeekBarChang
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-                WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_candlechart);
 
-        tvX = (TextView) findViewById(R.id.tvXMax);
-        tvY = (TextView) findViewById(R.id.tvYMax);
+        initView();
 
-        mSeekBarX = (SeekBar) findViewById(R.id.seekBar1);
+
         mSeekBarX.setOnSeekBarChangeListener(this);
-
-        mSeekBarY = (SeekBar) findViewById(R.id.seekBar2);
         mSeekBarY.setOnSeekBarChangeListener(this);
 
-        mChart = (CandleStickChart) findViewById(R.id.chart1);
+
         mChart.setBackgroundColor(Color.WHITE);
 
         mChart.setDescription("");
@@ -77,7 +74,7 @@ public class CandleStickChartActivity extends DemoBase implements OnSeekBarChang
         
         mChart.getLegend().setEnabled(false);
 
-        // Legend l = mChart.getLegend();
+         Legend l = mChart.getLegend();
         // l.setPosition(LegendPosition.BELOW_CHART_CENTER);
         // l.setFormSize(8f);
         // l.setFormToTextSpace(4f);
@@ -86,6 +83,13 @@ public class CandleStickChartActivity extends DemoBase implements OnSeekBarChang
         // mChart.setDrawLegend(false);
     }
 
+    private void initView() {
+        tvX = (TextView) findViewById(R.id.tvXMax);
+        tvY = (TextView) findViewById(R.id.tvYMax);
+        mSeekBarX = (SeekBar) findViewById(R.id.seekBar1);
+        mSeekBarY = (SeekBar) findViewById(R.id.seekBar2);
+        mChart = (CandleStickChart) findViewById(R.id.chart1);
+    }
 
 
     @Override
