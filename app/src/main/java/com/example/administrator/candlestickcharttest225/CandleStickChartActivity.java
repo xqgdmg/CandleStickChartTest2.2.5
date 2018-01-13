@@ -139,6 +139,7 @@ public class CandleStickChartActivity extends DemoBase {
             xVals.add("haha" + i);
         }
 
+        // TODO: 2018/1/13 这个缩放等级会影响到x轴显示的标签的数量
         if (xVals.size() > 5) {
             Matrix matrix = new Matrix();
             //x轴缩放1.5倍
