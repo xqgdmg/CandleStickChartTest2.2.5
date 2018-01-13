@@ -66,7 +66,7 @@ public class CandleStickChartActivity extends DemoBase {
 
         YAxis rightAxis = mChart.getAxisRight();
         rightAxis.setEnabled(true);
-        rightAxis.setLabelCount(5, true);// true 强制数据的数量
+//        rightAxis.setLabelCount(5, true);// true 强制右边数据的数量
         rightAxis.setDrawGridLines(true);// 是否绘制表格的网格背景
         rightAxis.setDrawAxisLine(true);// 是否绘制y轴的线
         rightAxis.setStartAtZero(true);//y轴的起点是否为0，右边无效？
@@ -148,7 +148,7 @@ public class CandleStickChartActivity extends DemoBase {
             mChart.getViewPortHandler().refresh(matrix, mChart, false);
             //x轴执行动画
             mChart.animateX(1500);
-            mChart.moveViewToX(0);
+            mChart.moveViewToX(xVals.size());
         }
 
         CandleDataSet set1 = new CandleDataSet(yVals1, "Data Set");
