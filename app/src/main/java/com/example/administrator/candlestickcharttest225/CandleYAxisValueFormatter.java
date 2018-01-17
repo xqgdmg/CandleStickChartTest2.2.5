@@ -6,17 +6,15 @@ import com.github.mikephil.charting.formatter.YAxisValueFormatter;
 import java.text.DecimalFormat;
 
 /**
- * @Author zhangxin
- * @date 2017/3/25 15:13
- * @description 自定义表格数据格式化
+ * 蜡烛图 Y轴数据格式化
  **/
-public class CustomYAxisValueFormatter2 implements YAxisValueFormatter {
+public class CandleYAxisValueFormatter implements YAxisValueFormatter {
 
 
     protected DecimalFormat mFormat;
 
-    public CustomYAxisValueFormatter2() {
-        mFormat = new DecimalFormat("0.000000");
+    public CandleYAxisValueFormatter() {
+        mFormat = new DecimalFormat("0.00");
     }
 
     @Override
