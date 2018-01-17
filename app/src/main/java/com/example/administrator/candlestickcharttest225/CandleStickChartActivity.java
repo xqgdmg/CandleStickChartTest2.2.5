@@ -66,6 +66,7 @@ public class CandleStickChartActivity extends DemoBase {
 
         YAxis rightAxis = mChart.getAxisRight();
         rightAxis.setEnabled(true);
+        rightAxis.setValueFormatter(new CustomYAxisValueFormatter2());// 定义y轴的小数位
 //        rightAxis.setLabelCount(5, true);// true 强制右边数据的数量
         rightAxis.setDrawGridLines(true);// 是否绘制表格的网格背景
         rightAxis.setDrawAxisLine(true);// 是否绘制y轴的线
